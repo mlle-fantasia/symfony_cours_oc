@@ -1,0 +1,20 @@
+
+{% extends "OCCoreBundle::layout.html.twig" %}
+
+{% block title %}
+    Accueil - {{ parent() }}
+{% endblock %}
+
+{% block occore_body %}
+
+    {% for message in app.flashes('info') %}
+        <div class="flash-notice form-control btn-warning">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <h1>Vous êtes sur la page d'accueil du site</h1>
+    <h3>les dernières annonces publiées</h3>
+    {{ render(controller("OCPlatformBundle:Advert:menu", {'limit': 3})) }}
+
+{% endblock %}
