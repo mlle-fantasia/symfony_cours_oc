@@ -6,7 +6,7 @@
  * Time: 16:36
  */
 
-namespace OC\PlatformBundle\antiSpam;
+namespace OC\PlatformBundle\AntiSpam;
 
 
 class OCAntispam

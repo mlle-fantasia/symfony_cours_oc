@@ -2,6 +2,7 @@
 
 namespace OC\PlatformBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Advert
 {
+
+    /**
+     * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $image;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="OC\PlatformBundle\Entity\Category", cascade={"persist"})
+     * @ORM\JoinTable(name="oc_advert_category")
+     */
+    private $categories;
+
+
     /**
      * @var int
      *
@@ -48,6 +63,20 @@ class Advert
      * @ORM\Column(name="content", type="text")
      */
     private $content;
+
+    /**
+     * @ORM\Column(name="published", type="boolean")
+     */
+    private $published = true;
+
+
+    // Comme la propriété $categories doit être un ArrayCollection,
+    // On doit la définir dans un constructeur :
+    public function __construct()
+    {
+        $this->date       = new \Datetime();
+        $this->categories = new ArrayCollection();
+    }
 
 
     /**
@@ -155,5 +184,62 @@ class Advert
     {
         return $this->content;
     }
+
+    /**
+     * Set published
+     *
+     * @param boolean $published
+     *
+     * @return Advert
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * Get published
+     *
+     * @return boolean
+     */
+    public function getPublished()
+    {
+        return $this->published;
+    }
+
+    public function setImage(Image $image = null)
+    {
+        $this->image = $image;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+
+
+    // Notez le singulier, on ajoute une seule catégorie à la fois
+    public function addCategory(Category $category)
+    {
+        // Ici, on utilise l'ArrayCollection vraiment comme un tableau
+        $this->categories[] = $category;
+    }
+
+    public function removeCategory(Category $category)
+    {
+        // Ici on utilise une méthode de l'ArrayCollection, pour supprimer la catégorie en argument
+        $this->categories->removeElement($category);
+    }
+
+    // Notez le pluriel, on récupère une liste de catégories ici !
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
 }
+
 
