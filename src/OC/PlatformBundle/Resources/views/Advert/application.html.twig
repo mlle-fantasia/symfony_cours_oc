@@ -1,0 +1,9 @@
+<ul class="nav nav-pills nav-stacked">
+    {% for application in listApplications %}
+        <li>
+            <a href="{{ path('oc_platform_view', {'id': application.id}) }}">
+                {{ application.title }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

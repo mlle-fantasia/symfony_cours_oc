@@ -37,6 +37,8 @@
 
             <h4>Les dernières annonces publiées</h4>
             {{ render(controller("OCPlatformBundle:Advert:menu", {'limit': 3})) }}
+            <h4>Les dernières candidatures enregistrées</h4>
+            {{ render(controller("OCPlatformBundle:Advert:application", {'limit': 5})) }}
 
             <h4>Contactez-nous</h4>
             <ul class="nav nav-pills nav-stacked">
