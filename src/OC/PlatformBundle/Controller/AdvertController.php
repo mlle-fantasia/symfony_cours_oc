@@ -4,17 +4,18 @@
 
 namespace OC\PlatformBundle\Controller;
 
+use OC\CoreBundle\Controller\AbstractController;
 use OC\PlatformBundle\Entity\Advert;
 use OC\PlatformBundle\Entity\Application;
 use OC\PlatformBundle\Entity\Image;
 use OC\PlatformBundle\Entity\AdvertSkill;
 use OC\PlatformBundle\Entity\Skill;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use OC\PlatformBundle\Repository\ApplicationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class AdvertController extends Controller
+class AdvertController extends AbstractController
 {
 //    public function indexAction($page)
 //    {
@@ -45,15 +46,12 @@ class AdvertController extends Controller
 //        ));
 //    }
     public function applicationAction(){
-        $listApplications = $this
-            ->getDoctrine()
-            ->getManager()
-            ->getRepository('OCPlatformBundle:Application')
-            ->getApplicationWithAdvert(5)
-        ;
+        /** @var ApplicationRepository $repositoryApplication */
+        $repositoryApplication =  $this->getRepository('OCPlatformBundle:Application');
+        $listApplications = $repositoryApplication ->getApplicationWithAdvert(5);
 
         return $this->render('OCPlatformBundle:Advert:application.html.twig', array(
-            '$listApplications' => $listApplications
+            'listApplications' => $listApplications
         ));
     }
 
