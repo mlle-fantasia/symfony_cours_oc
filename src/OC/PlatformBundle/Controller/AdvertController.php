@@ -9,42 +9,31 @@ use OC\PlatformBundle\Entity\Advert;
 use OC\PlatformBundle\Entity\Application;
 use OC\PlatformBundle\Entity\Image;
 use OC\PlatformBundle\Entity\AdvertSkill;
-use OC\PlatformBundle\Entity\Skill;
-use Doctrine\ORM\QueryBuilder;
 use OC\PlatformBundle\Repository\ApplicationRepository;
+use OC\PlatformBundle\Repository\AdvertRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AdvertController extends AbstractController
 {
-//    public function indexAction($page)
-//    {
-//        // Notre liste d'annonce en dur
-//        $listAdverts = array(
-//            array(
-//                'title'   => 'Recherche développpeur Symfony',
-//                'id'      => 1,
-//                'author'  => 'Alexandre',
-//                'content' => 'Nous recherchons un développeur Symfony débutant sur Lyon. Blabla…',
-//                'date'    => new \Datetime()),
-//            array(
-//                'title'   => 'Mission de webmaster',
-//                'id'      => 2,
-//                'author'  => 'Hugo',
-//                'content' => 'Nous recherchons un webmaster capable de maintenir notre site internet. Blabla…',
-//                'date'    => new \Datetime()),
-//            array(
-//                'title'   => 'Offre de stage webdesigner',
-//                'id'      => 3,
-//                'author'  => 'Mathieu',
-//                'content' => 'Nous proposons un poste pour webdesigner. Blabla…',
-//                'date'    => new \Datetime())
-//        );
-//
-//        return $this->render('OCPlatformBundle:Advert:index.html.twig', array(
-//            'listAdverts' => $listAdverts
-//        ));
-//    }
+    public function indexAction($page)
+    {
+        if($page<1){
+            throw new NotFoundHttpException('page"'.$page.'"inexistante.');
+        }
+
+        /** @var AdvertRepository $repositoryAdvert */
+        $repositoryAdvert = $this->getRepository('OCPlatformBundle:Advert');
+
+        $listAdverts = $repositoryAdvert->getAdverts();
+
+        return $this->render('OCPlatformBundle:Advert:index.html.twig', array(
+            // le contrôleur passe les variables nécessaires au template !
+            'listAdverts' => $listAdverts
+        ));
+    }
+
+
     public function applicationAction(){
         /** @var ApplicationRepository $repositoryApplication */
         $repositoryApplication =  $this->getRepository('OCPlatformBundle:Application');
@@ -170,18 +159,16 @@ class AdvertController extends AbstractController
 
     public function menuAction($limit)
     {
-        $repository = $this
-            ->getDoctrine()
-            ->getManager()
-            ->getRepository('OCPlatformBundle:Advert')
-        ;
+        $em = $this->getDoctrine()->getManager();
 
-        $listAdverts = $repository->findAll();
-
+        $listAdverts = $em->getRepository('OCPlatformBundle:Advert')->findBy(
+            array(),                 // Pas de critère
+            array('date' => 'desc'), // On trie par date décroissante
+            $limit,                  // On sélectionne $limit annonces
+            0                        // À partir du premier
+        );
 
         return $this->render('OCPlatformBundle:Advert:menu.html.twig', array(
-            // Tout l'intérêt est ici : le contrôleur passe
-            // les variables nécessaires au template !
             'listAdverts' => $listAdverts
         ));
     }
@@ -253,15 +240,15 @@ class AdvertController extends AbstractController
 
     public function testAction()
     {
-        $repository = $this
-            ->getDoctrine()
-            ->getManager()
-            ->getRepository('OCPlatformBundle:Advert')
-        ;
+        $advert = new Advert();
+        $advert->setTitle("Recherche développeur !");
 
-        $listAdverts = $repository->myFindAll();
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($advert);
+        $em->flush(); // C'est à ce moment qu'est généré le slug
 
-        // ...
+        return new Response('Slug généré : '.$advert->getSlug());
+        // Affiche « Slug généré : recherche-developpeur »
     }
 
 }

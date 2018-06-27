@@ -67,5 +67,21 @@ class AdvertRepository extends EntityRepository
     }
 
 
+        public function getAdverts()
+    {
+        $query = $this->createQueryBuilder('a')
+            // Jointure sur l'attribut image
+            ->leftJoin('a.image', 'i')
+            ->addSelect('i')
+            // Jointure sur l'attribut categories
+            ->leftJoin('a.categories', 'c')
+            ->addSelect('c')
+            ->orderBy('a.date', 'DESC')
+            ->getQuery()
+        ;
+
+        return $query->getResult();
+    }
+
 
 }

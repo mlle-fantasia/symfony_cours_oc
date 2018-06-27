@@ -14,10 +14,15 @@
         {% for advert in listAdverts %}
             <li>
                 <a href="{{ path('oc_platform_view', {'id': advert.id}) }}">
-                    {{ advert.title }}
+                    <img src="{{ advert.getImage().getUrl() }}" alt="{{ advert.getImage().getAlt() }} " >
+                      {{ advert.title }}
                 </a>
                 par {{ advert.author }},
-                le {{ advert.date|date('d/m/Y') }}
+                le {{ advert.date|date('d/m/Y') }}<br/>
+                {% for categorie in advert.getCategories()%}
+                {{ categorie.name }}
+                {% endfor %}
+
             </li>
         {% else %}
             <li>Pas (encore !) d'annonces</li>
