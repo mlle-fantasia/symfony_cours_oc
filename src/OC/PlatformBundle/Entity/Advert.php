@@ -27,7 +27,7 @@ class Advert
     private $applications; // Notez le « s », une annonce est liée à plusieurs candidatures cet attribut est un arrayCollection
 
     /**
-     * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="OC\PlatformBundle\Entity\Image", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $image;
