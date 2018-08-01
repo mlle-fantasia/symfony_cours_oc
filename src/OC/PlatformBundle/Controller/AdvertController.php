@@ -9,13 +9,41 @@ use OC\PlatformBundle\Entity\Advert;
 use OC\PlatformBundle\Repository\ApplicationRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use OC\PlatformBundle\Form\AdvertEditType;
 use OC\PlatformBundle\Form\AdvertType;
 
 class AdvertController extends AbstractController
+
 {
+
+    public function testAction()
+    {
+        $advert = new Advert;
+
+        $advert->setDate(new \Datetime());  // Champ « date » OK
+        $advert->setTitle('abc');           // Champ « title » incorrect : moins de 10 caractères
+        //$advert->setContent('blabla');    // Champ « content » incorrect : on ne le définit pas
+        $advert->setAuthor('A');            // Champ « author » incorrect : moins de 2 caractères
+
+        // On récupère le service validator
+        $validator = $this->get('validator');
+
+        // On déclenche la validation sur notre object
+        $listErrors = $validator->validate($advert);
+
+        // Si $listErrors n'est pas vide, on affiche les erreurs
+        if(count($listErrors) > 0) {
+            // $listErrors est un objet, sa méthode __toString permet de lister joliement les erreurs
+            return new Response((string) $listErrors);
+        } else {
+            return new Response("L'annonce est valide !");
+        }
+    }
+
+
+
     public function indexAction($page)
     {
         if($page<1){
@@ -89,8 +117,12 @@ class AdvertController extends AbstractController
         ));
     }
 
+    /**
+     * @Security("has_role('ROLE_AUTEUR')")
+     */
     public function addAction(Request $request)
     {
+
         // On crée un objet Advert
         $advert = new Advert();
 
@@ -229,17 +261,17 @@ class AdvertController extends AbstractController
         ));
     }
 
-    public function testAction()
-    {
-        $advert = new Advert();
-        $advert->setTitle("Recherche développeur !");
-
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($advert);
-        $em->flush(); // C'est à ce moment qu'est généré le slug
-
-        return new Response('Slug généré : '.$advert->getSlug());
-        // Affiche « Slug généré : recherche-developpeur »
-    }
+//    public function testAction()
+//    {
+//        $advert = new Advert();
+//        $advert->setTitle("Recherche développeur !");
+//
+//        $em = $this->getDoctrine()->getManager();
+//        $em->persist($advert);
+//        $em->flush(); // C'est à ce moment qu'est généré le slug
+//
+//        return new Response('Slug généré : '.$advert->getSlug());
+//        // Affiche « Slug généré : recherche-developpeur »
+//    }
 
 }
